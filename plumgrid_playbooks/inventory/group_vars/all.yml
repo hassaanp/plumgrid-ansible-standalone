@@ -51,6 +51,7 @@ pg_ports:
   rest_port: 9180
   plumgrid_port: 8001
   http_redirect_port: 9080
+  pgcli_port: 3000
   pg_rsync_port: 2222
   mw_port: 4000
 
