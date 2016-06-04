@@ -1,0 +1,15 @@
+# Insert entries for target hosts to deploy here
+# format: <hostname> ansible_ssh_host=<IP>
+
+localhost ansible_connection=local
+
+[director_hosts]
+director1 ansible_ssh_host=192.168.100.11
+director2 ansible_ssh_host=192.168.100.12
+director3 ansible_ssh_host=192.168.100.13
+
+[edge_hosts]
+edge1 ansible_ssh_host=192.168.100.14
+
+[gateway_hosts]
+gateway1 ansible_ssh_host=192.168.100.20

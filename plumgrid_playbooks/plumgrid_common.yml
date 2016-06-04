@@ -1,0 +1,52 @@
+---
+#
+# Copyright (c) 2016, PLUMgrid Inc, http://plumgrid.com
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- hosts: director_hosts
+  user: root
+  roles:
+    - plumgrid_common
+    - create_ifcs
+    - plumgrid_director
+  vars:
+    pg_service_name: plumgrid
+  any_errors_fatal: yes
+
+- hosts: edge_hosts
+  user: root
+  roles:
+    - plumgrid_common
+    - create_ifcs
+    - plumgrid_edge
+  vars:
+    pg_service_name: plumgrid-iovisor
+
+- hosts: gateway_hosts
+  user: root
+  roles:
+    - plumgrid_common
+    - create_ifcs
+    - plumgrid_gateway
+  vars:
+    pg_service_name: plumgrid-iovisor
+
+- hosts: director_hosts
+  user: root
+  tasks:
+    - name: Restart libvirt-bin
+      service:
+        name: libvirt-bin
+        state: restarted
+        pattern: libvirt-bin

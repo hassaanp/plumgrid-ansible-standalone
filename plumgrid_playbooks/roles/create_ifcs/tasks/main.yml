@@ -1,0 +1,50 @@
+---
+#
+# Copyright (c) 2016, PLUMgrid Inc, http://plumgrid.com
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Checking for ifcs file existence
+  stat:
+    path: "/var/lib/libvirt/filesystems/plumgrid-data/conf/pg/ifcs.conf"
+  register: ifcs_present
+
+- name: Insert Fabric interface update script
+  copy:
+    src: update_pg_ifc.sh
+    dest: /usr/local/bin/update_pg_ifc.sh
+
+- name: Update Fabric interface for non defaults
+  command: sh /usr/local/bin/update_pg_ifc.sh -i {{ fabric_ifc_override[inventory_hostname] }}
+  when: fabric_ifc_override is defined and inventory_hostname in fabric_ifc_override and ifcs_present.stat.exists == True
+
+- name: Update Fabric interface if default
+  command: sh /usr/local/bin/update_pg_ifc.sh -i {{ fabric_interface }}
+  when: ifcs_present.stat.exists == True and (fabric_ifc_override is undefined or inventory_hostname not in fabric_ifc_override)
+
+# Ensuring idempotency for ifcs file changes
+- name: Removing any pre-existing pg ifcs.conf
+  file: path=/var/lib/libvirt/filesystems/plumgrid-data/conf/pg/ifcs.conf state=absent
+
+- name: Create ifcs file
+  lineinfile:
+    dest: "/var/lib/libvirt/filesystems/plumgrid-data/conf/pg/ifcs.conf"
+    line: "{{ fabric_interface }} = fabric_core host"
+    create: yes
+
+- name: Override Fabric iterface for node
+  replace:
+    dest: "/var/lib/libvirt/filesystems/plumgrid-data/conf/pg/ifcs.conf"
+    replace: "{{ fabric_ifc_override[inventory_hostname] }} = fabric_core host"
+    regexp: "{{ fabric_interface }} = fabric_core host"
+  when: fabric_ifc_override is defined and inventory_hostname in fabric_ifc_override

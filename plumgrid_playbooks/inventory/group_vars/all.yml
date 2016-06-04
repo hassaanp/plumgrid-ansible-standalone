@@ -1,0 +1,75 @@
+---
+#
+# Copyright (c) 2016, PLUMgrid Inc, http://plumgrid.com
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# The variables used by the PLUMgrid playbooks
+# Replace all < > placeholders with appropiate values before beginning an installation
+
+# Repo Link hosting PLUMgrid packages
+plumgrid_repo: http://<LCM-IP>:81
+plumgrid_component: halfdome-510
+
+# PLUMgrid Zone configuration
+plumgrid_ip: <Director-IPs>
+pg_vip: <VIP on Management Network>
+fabric_mode: host
+pg_username: plumgrid
+pg_password: plumgrid
+
+# Default Fabric Interface
+fabric_interface: <fabric interface for all nodes, eg eth1>
+
+# Default Management Interface
+pg_management: <management interface for all nodes, eg. eth0>
+
+hostname: "{{ inventory_hostname }}"
+
+# Installation parameters
+gpg_keypath: /var/lib/plumgrid/GPG-KEY
+install_license: True
+pg_license_path: /var/lib/plumgrid/pg_license
+lvm_keypath_content: /var/lib/plumgrid/id_rsa.pub
+required_pg_kernel: 4.2.0-27-generic
+
+pg_ports:
+  vip_port: 443
+  postgres_port: 5432
+  log_collection_port: 12349
+  rest_port: 9180
+  plumgrid_port: 8001
+  pgcli_port: 3000
+  http_redirect_port: 9080
+  pg_rsync_port: 2222
+  mw_port: 4000
+
+# keepalived config
+keepalived_router_id: "{{ pg_vip.split('.')[3] }}"
+keepalived_priority: 100
+keepalived_password: keepaliv
+
+# nginx config
+nginx_virtual_ip: "{{ pg_vip }}"
+real1: "{{ plumgrid_ip.split(',')[0] }}"
+
+# Comment out real2 & real3 for single Director setup
+real2: "{{ plumgrid_ip.split(',')[1] }}"
+real3: "{{ plumgrid_ip.split(',')[2] }}"
+
+# Gateway Hosts and their interfaces
+gateway_hosts:
+  - hostname: <gateway hostname>
+    gateway_devs:
+    - <external ifc of gw>

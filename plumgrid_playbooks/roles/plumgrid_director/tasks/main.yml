@@ -1,0 +1,62 @@
+---
+#
+# Copyright (c) 2016, PLUMgrid Inc, http://plumgrid.com
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Extract License from file
+- name: Extract License
+  set_fact:
+    pg_license: "{{ lookup('file', pg_license_path) }}"
+
+# Modify template files
+- name: Setup Keepalived Config
+  template:
+    src: keepalived.conf
+    dest: /var/lib/libvirt/filesystems/plumgrid-data/conf/etc/keepalived.conf
+
+- name: Setup nginx Config
+  template:
+    src: default.conf
+    dest: /var/lib/libvirt/filesystems/plumgrid-data/conf/pg/nginx.conf
+
+- name: Restart PLUMgrid service
+  service:
+    name: plumgrid
+    state: restarted
+
+- name: Login to PLUMgrid
+  shell: >
+    curl -H "Accept: application/json" -H "Content-Type: application/json" -k -X POST https://{{ pg_vip }}/0/login -d '{"userName":"{{ pg_username }}","password":"{{ pg_password }}"}' -c /tmp/cookie -i | grep HTTP | awk '{print $2}'
+  when: install_license == True and inventory_hostname == groups['director_hosts'][0]
+  register: login_status
+  until: login_status.stdout == '200'
+  retries: 30
+  delay: 10
+
+- name: Install PLUMgrid License
+  shell: >
+    curl -H "Accept: application/json" -H "Content-Type: application/json" https://{{ pg_vip }}/0/tenant_manager/license_key/key1 -k -X PUT -d '{"license": "{{pg_license}}"}' -i -b /tmp/cookie -k| grep HTTP | awk '{print $2}'
+  when: install_license == True and inventory_hostname == groups['director_hosts'][0]
+  register: license_put_status
+  until: license_put_status.stdout == '200'
+  retries: 5
+  delay: 10
+
+- name: Check PLUMgrid services
+  shell: >
+     /opt/local/bin/nsenter -t $(ps ho pid --ppid $(cat /var/run/libvirt/lxc/plumgrid.pid)) -m -n -u -i -p /usr/bin/service {{ pg_service_name }} status
+  register: pg_lxc_check
+  until: pg_lxc_check.stdout.find('start/running') != -1
+  retries: 3
+  delay: 5

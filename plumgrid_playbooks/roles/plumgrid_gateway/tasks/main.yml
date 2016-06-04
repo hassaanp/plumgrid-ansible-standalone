@@ -1,0 +1,77 @@
+---
+#
+# Copyright (c) 2016, PLUMgrid Inc, http://plumgrid.com
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Insert gateway ifc update script
+  copy:
+    src: update_gw_ifc.sh
+    dest: /usr/local/bin/update_gw_ifc.sh
+
+- name: Checking for ifcs file existence
+  stat:
+    path: "/var/lib/libvirt/filesystems/plumgrid/var/run/plumgrid/lxc/ifc_list_gateway"
+  register: ifcs_present
+
+- name: Run Gateway Interface Checks
+  include: update_gateway.yml
+  when: ifcs_present.stat.exists == True
+  ignore_errors: true
+
+# Ensuring idempotency for ifcs file changes
+- name: Removing any pre-existing pg ifcs.conf
+  file: path=/var/lib/libvirt/filesystems/plumgrid-data/conf/pg/ifcs.conf state=absent
+
+- name: Create ifcs file
+  lineinfile:
+    dest: "/var/lib/libvirt/filesystems/plumgrid-data/conf/pg/ifcs.conf"
+    line: "{{ fabric_interface }} = fabric_core host"
+    create: yes
+
+- name: Override Fabric iterface for Gateway nodes
+  replace:
+    dest: "/var/lib/libvirt/filesystems/plumgrid-data/conf/pg/ifcs.conf"
+    replace: "{{ fabric_ifc_override[inventory_hostname] }} = fabric_core host"
+    regexp: "{{ fabric_interface }} = fabric_core host"
+  when: fabric_ifc_override is defined and inventory_hostname in fabric_ifc_override
+
+- name: Add Gateway dev interfaces
+  lineinfile:
+    dest: "/var/lib/libvirt/filesystems/plumgrid-data/conf/pg/ifcs.conf"
+    line: "{{ item.1 }} = access_phys"
+  with_subelements:
+      - gateway_hosts
+      - gateway_devs
+  when: inventory_hostname == "{{item.0.hostname}}"
+
+- name: Ensure no nova services on Gateways
+  service:
+    name: nova-compute
+    state: stopped
+    pattern: nova-compute
+  register: service_stopped
+  failed_when: "'msg' in service_stopped and 'FAIL' in service_stopped.msg|upper"
+
+- name: Restart PLUMgrid services
+  service:
+    name: plumgrid
+    state: restarted
+
+- name: Check PLUMgrid services
+  shell: >
+     /opt/local/bin/nsenter -t $(ps ho pid --ppid $(cat /var/run/libvirt/lxc/plumgrid.pid)) -m -n -u -i -p /usr/bin/service {{ pg_service_name }} status
+  register: pg_lxc_check
+  until: pg_lxc_check.stdout.find('start/running') != -1
+  retries: 3
+  delay: 5
