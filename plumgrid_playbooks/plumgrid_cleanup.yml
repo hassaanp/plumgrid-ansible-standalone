@@ -1,0 +1,41 @@
+---
+#
+# Copyright (c) 2016, PLUMgrid Inc, http://plumgrid.com
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+#
+# Caution: Use with care, this playbook will destroy a complete
+#          PLUMgrid environment
+#
+
+# Remove PLUMgrid Edges & Directors
+- name: Cleanup PLUMgrid
+  hosts: director_hosts:edge_hosts:gateway_hosts
+  user: root
+  tasks:
+    - name: remove sources.list
+      file: path=/etc/apt/sources.list.d/plumgrid.list state=absent
+    - name: unload iovisor
+      command: /sbin/rmmod iovisor
+    - name: remove iovisor dkms
+      apt:
+        name: iovisor-dkms
+        state: absent
+        purge: yes
+    - name: remove plumgrid-lxc
+      apt:
+        name: plumgrid-lxc
+        state: absent
+        purge: yes
+        force: yes
