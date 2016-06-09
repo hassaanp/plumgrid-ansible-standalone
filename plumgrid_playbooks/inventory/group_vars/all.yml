@@ -63,8 +63,6 @@ keepalived_password: keepaliv
 # nginx config
 nginx_virtual_ip: "{{ pg_vip }}"
 real1: "{{ plumgrid_ip.split(',')[0] }}"
-
-# Comment out real2 & real3 for single Director setup
 real2: "{{ plumgrid_ip.split(',')[1] }}"
 real3: "{{ plumgrid_ip.split(',')[2] }}"
 
