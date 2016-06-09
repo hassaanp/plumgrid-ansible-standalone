@@ -20,7 +20,7 @@
 
 # Repo Link hosting PLUMgrid packages
 plumgrid_repo: http://<LCM-IP>:81
-plumgrid_component: halfdome-510
+plumgrid_component: halfdome-500
 
 # PLUMgrid Zone configuration
 plumgrid_ip: <Director-IPs>
