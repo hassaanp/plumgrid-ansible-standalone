@@ -43,6 +43,7 @@ install_license: True
 pg_license_path: /var/lib/plumgrid/pg_license
 lvm_keypath_content: /var/lib/plumgrid/id_rsa.pub
 required_pg_kernel: 3.19.0-47-generic
+libnetwork_enable: False
 
 pg_ports:
   vip_port: 443

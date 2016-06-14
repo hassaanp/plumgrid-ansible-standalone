@@ -1,0 +1,48 @@
+---
+#
+# Copyright (c) 2015, PLUMgrid Inc, http://plumgrid.com
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Install docker
+- name: Check if docker is installed
+  command: dpkg-query -l docker-engine
+  register: docker_check
+  ignore_errors: yes
+
+- name: Install Docker
+  shell: curl -sSL https://get.docker.com/ | sh
+  when: docker_check.stderr.find('no packages found') != -1
+
+- name: Copy Libnetwork package
+  copy:
+    src: libnetwork.deb
+    dest: /tmp/libnetwork.deb
+
+# TODO: JaveriaK, change copy above to download deb and install
+#- name: Download libnetwork deb
+#  get_url: url="{{ package_url }}"
+#    dest="/tmp/libnetwork.deb"
+
+- name: Install Libnetwork
+  apt:
+    deb: "/tmp/libnetwork.deb"
+    state: present
+  sudo: true
+
+- name: Update PLUMgrid VIP in libnetwork config
+  ini_file:
+    dest: /opt/pg/libnetwork/config.ini
+    section: PLUMgrid
+    option: virtual_ip
+    value: "{{ pg_vip }}"
