@@ -38,3 +38,6 @@
   retries: 3
   delay: 5
 
+- name: Setup Libnetwork config
+  include: setup_libnetwork.yml
+  when: libnetwork_enable is defined and libnetwork_enable == True
