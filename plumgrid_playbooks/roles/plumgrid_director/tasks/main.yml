@@ -14,26 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Extract License from file
 - name: Extract License
   set_fact:
     pg_license: "{{ lookup('file', pg_license_path) }}"
 
-# Modify template files
-- name: Setup Keepalived Config
+- name: Setup Keepalived and Nginx config
   template:
-    src: keepalived.conf
-    dest: /var/lib/libvirt/filesystems/plumgrid-data/conf/etc/keepalived.conf
-
-- name: Setup nginx Config
-  template:
-    src: default.conf
-    dest: /var/lib/libvirt/filesystems/plumgrid-data/conf/pg/nginx.conf
-
-- name: Restart PLUMgrid service
-  service:
-    name: plumgrid
-    state: restarted
+    src: "{{ item.src }}"
+    dest: "{{ plumgrid_data_dir }}/{{ item.dest }}"
+  with_items:
+    - { src: 'keepalived.conf.j2', dest: 'conf/etc/keepalived.conf' }
+    - { src: 'default.conf.j2', dest: 'conf/pg/nginx.conf' }
+  notify:
+    - Restart PLUMgrid service
 
 - name: Login to PLUMgrid
   shell: >
