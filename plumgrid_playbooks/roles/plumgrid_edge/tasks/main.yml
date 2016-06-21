@@ -16,19 +16,11 @@
 
 - name: Update qemu settings for compute hosts
   template:
-    src: qemu.conf
-    dest: /etc/libvirt/qemu.conf
-
-- name: Restart libvirt-bin
-  service:
-    name: libvirt-bin
-    state: restarted
-    pattern: libvirt-bin
-
-- name: Restart PLUMgrid service
-  service:
-    name: plumgrid
-    state: restarted
+    src: "qemu.conf.j2"
+    dest: "/etc/libvirt/qemu.conf"
+  notify:
+    - Restart libvirt-bin
+    - Restart PLUMgrid service
 
 - name: Check PLUMgrid services
   shell: >
