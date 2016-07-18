@@ -42,7 +42,7 @@
 
 - name: Install iovisor and plumgrid-lxc
   apt:
-    name: 
+    name: "{{ item }}" 
     update_cache: yes
     state: latest
     force: yes
