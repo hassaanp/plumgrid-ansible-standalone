@@ -18,9 +18,17 @@
   template:
     src: "qemu.conf.j2"
     dest: "/etc/libvirt/qemu.conf"
-  notify:
-    - Restart libvirt-bin
-    - Restart PLUMgrid service
+
+- name: Restart libvirt-bin
+  service:
+    name: libvirt-bin
+    state: restarted
+    pattern: libvirt-bin
+
+- name: Restart PLUMgrid service
+  service:
+    name: plumgrid
+    state: restarted
 
 - name: Check PLUMgrid services
   shell: >
