@@ -24,18 +24,20 @@
   hosts: director_hosts:edge_hosts:gateway_hosts
   user: root
   tasks:
-    - name: remove sources.list
-      file: path=/etc/apt/sources.list.d/plumgrid.list state=absent
-    - name: unload iovisor
-      command: /sbin/rmmod iovisor
-    - name: remove iovisor dkms
-      apt:
-        name: iovisor-dkms
+    - name: Remove sources.list
+      file:
+        path: "/etc/apt/sources.list.d/plumgrid.list"
         state: absent
-        purge: yes
-    - name: remove plumgrid-lxc
+
+    - name: Unload iovisor
+      command: /sbin/rmmod iovisor
+
+    - name: Remove iovisor-dkms and plumgrid-lxc
       apt:
-        name: plumgrid-lxc
+        name: "{{ item }}"
         state: absent
         purge: yes
         force: yes
+      with_items:
+        - iovisor-dkms
+        - plumgrid-lxc

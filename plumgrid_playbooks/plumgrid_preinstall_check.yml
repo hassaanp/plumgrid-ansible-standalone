@@ -24,12 +24,14 @@
       stat:
         path: "{{ pg_license_path }}"
       register: lic_present
-      failed_when: install_license == True and (lic_present.stat.exists == False or lic_present.stat.size == 0)
+      failed_when: install_license and (lic_present.stat.exists == False or lic_present.stat.size == 0)
+
     - name: Checking for LCM key file
       stat:
         path: "{{ lvm_keypath_content }}"
       register: lcm_key_present
-      failed_when: lcm_enabled is defined and lcm_enabled == True and (lcm_key_present.stat.exists == False  or lcm_key_present.stat.size == 0)
+      failed_when: lcm_enabled is defined and lcm_enabled and (lcm_key_present.stat.exists == False  or lcm_key_present.stat.size == 0)
+
     - name: Download PLUMgrid repo GPG-key
       get_url:
         url: "{{ plumgrid_repo }}/plumgrid/GPG-KEY"
@@ -42,10 +44,10 @@
   tasks:
     - name: Check Kernel Version
       fail:
-        msg: >
-          Unsupported kernel Version found
+        msg: |
+          "Unsupported kernel Version found
           [ {{ ansible_kernel }} > {{ required_pg_kernel }} ]
-          Resolve this issue before continuing.
+          Resolve this issue before continuing.""
       when: required_pg_kernel is defined and (ansible_kernel | version_compare(required_pg_kernel, '>'))
 
 - name: Check Pre-Install Requirements
@@ -56,7 +58,11 @@
       command: dpkg-query -l plumgrid-lxc
       register: deb_check
       ignore_errors: yes
+
     - name: Check that plumgrid designated ports are free
-      wait_for: port={{ item.value }} state=absent timeout=10
-      with_dict: pg_ports
+      wait_for:
+        port: "{{ item.value }}"
+        state: absent
+        timeout: 10
+      with_dict: "{{ pg_ports }}"
       when: deb_check.stderr.find('no packages found') != -1
