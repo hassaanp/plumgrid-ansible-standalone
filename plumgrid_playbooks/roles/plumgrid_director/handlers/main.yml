@@ -1,5 +1,0 @@
----
-- name: Restart PLUMgrid service
-  service:
-    name: plumgrid
-    state: restarted
