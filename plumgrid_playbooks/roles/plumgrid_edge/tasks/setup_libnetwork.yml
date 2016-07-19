@@ -24,20 +24,26 @@
   shell: curl -sSL https://get.docker.com/ | sh
   when: docker_check.stderr.find('no packages found') != -1
 
-- name: Copy Libnetwork package
+- name: Copy Libnetwork and PG CLI package
   copy:
-    src: libnetwork.deb
-    dest: /tmp/libnetwork.deb
+    src: "{{ item }}"
+    dest: /tmp/
+  with_items:
+    - libnetwork.deb
+    - pg-cli.deb
 
 # TODO: JaveriaK, change copy above to download deb and install
 #- name: Download libnetwork deb
 #  get_url: url="{{ package_url }}"
 #    dest="/tmp/libnetwork.deb"
 
-- name: Install Libnetwork
+- name: Install Libnetwork and PG CLI
   apt:
-    deb: "/tmp/libnetwork.deb"
+    deb: "{{ item }}"
     state: present
+  with_items:
+    - /tmp/libnetwork.deb
+    - /tmp/pg-cli.deb
 
 - name: Update PLUMgrid VIP in libnetwork config
   ini_file:
@@ -45,3 +51,30 @@
     section: PLUMgrid
     option: virtual_ip
     value: "{{ pg_vip }}"
+
+
+- name: Update PLUMgrid Username in libnetwork config
+  ini_file:
+    dest: /opt/pg/libnetwork/config.ini
+    section: PLUMgrid
+    option: pg_username
+    value: "{{ pg_username }}"
+
+- name: Update PLUMgrid Password in libnetwork config
+  ini_file:
+    dest: /opt/pg/libnetwork/config.ini
+    section: PLUMgrid
+    option: pg_password
+    value: "{{ pg_password }}"
+
+- name: Update PLUMgrid Default VD in libnetwork config
+  ini_file:
+    dest: /opt/pg/libnetwork/config.ini
+    section: PLUMgrid
+    option: default_domain
+    value: "{{ default_domain }}"
+
+- name: Restart Libnetwork Service
+  service:
+    name: libnetwork
+    state: restarted

@@ -19,6 +19,22 @@
 #          PLUMgrid environment
 #
 
+# Remove Libnetwork Plugin and Docker
+- name: Cleanup PG CLI, Libnetwork Plugin & Docker
+  hosts: edge_hosts
+  user: root
+  tasks:
+    - name: Remove PG CLI, Libnetwork Plugin and Docker
+      ignore_errors: yes
+      apt:
+        name: "{{ item }}"
+        state: absent
+        purge: yes
+      with_items:
+        - pg-cli
+        - libnetwork
+        - docker-engine
+
 # Remove PLUMgrid Edges & Directors
 - name: Cleanup PLUMgrid
   hosts: director_hosts:edge_hosts:gateway_hosts
