@@ -16,8 +16,8 @@
 
 - name: Update qemu settings for compute hosts
   template:
-    src: qemu.conf
-    dest: /etc/libvirt/qemu.conf
+    src: "qemu.conf.j2"
+    dest: "/etc/libvirt/qemu.conf"
 
 - name: Restart libvirt-bin
   service:
