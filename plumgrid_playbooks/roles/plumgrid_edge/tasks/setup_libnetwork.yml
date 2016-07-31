@@ -24,26 +24,13 @@
   shell: curl -sSL https://get.docker.com/ | sh
   when: docker_check.stderr.find('no packages found') != -1
 
-- name: Copy Libnetwork and PG CLI package
-  copy:
-    src: "{{ item }}"
-    dest: /tmp/
-  with_items:
-    - libnetwork.deb
-    - pg-cli.deb
-
-# TODO: JaveriaK, change copy above to download deb and install
-#- name: Download libnetwork deb
-#  get_url: url="{{ package_url }}"
-#    dest="/tmp/libnetwork.deb"
-
 - name: Install Libnetwork and PG CLI
   apt:
-    deb: "{{ item }}"
+    name: "{{ item }}"
     state: present
   with_items:
-    - /tmp/libnetwork.deb
-    - /tmp/pg-cli.deb
+    - libnetwork
+    - pg-cli
 
 - name: Update PLUMgrid VIP in libnetwork config
   ini_file:

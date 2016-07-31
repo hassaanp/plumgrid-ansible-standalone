@@ -48,7 +48,7 @@
     force: yes
   with_items:
     - iovisor-dkms
-    - plumgrid-lxc
+    - "{{ pg_package_name }}"
 
 - name: Setup PLUMgrid Conf
   template:

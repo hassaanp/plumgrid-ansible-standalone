@@ -25,6 +25,9 @@ plumgrid_component: halfdome-500
 # PLUMgrid configuration directory path
 plumgrid_data_dir: "/var/lib/libvirt/filesystems/plumgrid-data"
 
+#PLUMgrid Package Name
+pg_package_name: plumgrid-lxc
+
 # PLUMgrid Zone configuration
 plumgrid_ip: <Director-IPs>
 pg_vip: <VIP on Management Network>
@@ -46,7 +49,7 @@ install_license: True
 pg_license_path: /var/lib/plumgrid/pg_license
 lvm_keypath_content: /var/lib/plumgrid/id_rsa.pub
 required_pg_kernel: 3.19.0-47-generic
-libnetwork_enable: True
+libnetwork_enable: False
 default_domain: admin
 
 pg_ports:
