@@ -40,7 +40,7 @@
     file: /tmp/GPG-KEY
     state: present
 
-- name: Install iovisor and plumgrid-lxc
+- name: Install iovisor and plumgrid
   apt:
     name: "{{ item }}" 
     update_cache: yes
