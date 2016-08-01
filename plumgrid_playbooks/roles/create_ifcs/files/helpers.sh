@@ -1,4 +1,4 @@
----
+#!/bin/bash
 #
 # Copyright (c) 2016, PLUMgrid Inc, http://plumgrid.com
 #
@@ -13,20 +13,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
-- name: Restart PLUMgrid service
-  service:
-    name: plumgrid
-    state: restarted
+# (c) 2016, Javeria Khan <javeriak@plumgrid.com>
 
-- name: Check PLUMgrid services
-  shell: >
-    /usr/bin/service {{ pg_service_name }} status
-  register: pg_service_check
-  until: pg_service_check.stdout.find('start/running') != -1
-  retries: 3
-  delay: 5
+# This script passes variable value for PLUMgrid Data Directory Path.
 
-- name: Setup Libnetwork config
-  include: setup_libnetwork.yml
-  when: libnetwork_enable is defined and libnetwork_enable == True
+plumgrid_data_dir="/var/lib/libvirt/filesystems/plumgrid-data"
+plumgrid_ifc_gateway_dir="/var/lib/libvirt/filesystems/plumgrid/var/run/plumgrid/lxc"

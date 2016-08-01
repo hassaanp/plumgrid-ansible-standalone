@@ -14,16 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Install docker
-- name: Check if docker is installed
-  command: dpkg-query -l docker-engine
-  register: docker_check
-  ignore_errors: yes
-
-- name: Install Docker
-  shell: curl -sSL https://get.docker.com/ | sh
-  when: docker_check.stderr.find('no packages found') != -1
-
 - name: Install Libnetwork and PG CLI
   apt:
     name: "{{ item }}"

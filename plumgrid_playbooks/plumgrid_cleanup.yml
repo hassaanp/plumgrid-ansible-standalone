@@ -24,20 +24,32 @@
   hosts: edge_hosts
   user: root
   tasks:
-    - name: Remove PG CLI, Libnetwork Plugin and Docker
+    - name: Remove sources.list
+      file:
+        path: "/etc/apt/sources.list.d/plumgrid.list"
+        state: absent
+
+    - name: Unload iovisor
+      command: /sbin/rmmod iovisor
+      ignore_errors: yes
+
+    - name: Remove Packages
       ignore_errors: yes
       apt:
         name: "{{ item }}"
         state: absent
         purge: yes
+        force: yes
       with_items:
         - pg-cli
         - libnetwork
+        - iovisor-dkms
+        - plumgrid-edge-docker
         - docker-engine
 
-# Remove PLUMgrid Edges & Directors
+# Remove PLUMgrid  Directors & Gateways
 - name: Cleanup PLUMgrid
-  hosts: director_hosts:edge_hosts:gateway_hosts
+  hosts: director_hosts:gateway_hosts
   user: root
   tasks:
     - name: Remove sources.list
@@ -47,6 +59,7 @@
 
     - name: Unload iovisor
       command: /sbin/rmmod iovisor
+      ignore_errors: yes
 
     - name: Remove iovisor-dkms and plumgrid-lxc
       apt:
@@ -54,6 +67,7 @@
         state: absent
         purge: yes
         force: yes
+      ignore_errors: yes
       with_items:
         - iovisor-dkms
-        - "{{ pg_package_name }}"
+        - plumgrid-lxc

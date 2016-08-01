@@ -23,6 +23,7 @@
   vars:
     - pg_service_name: plumgrid
     - pg_package_name: plumgrid-lxc
+    - plumgrid_ifc_gateway_dir: "/var/lib/libvirt/filesystems/plumgrid/var/run/plumgrid/lxc"
   any_errors_fatal: yes
 
 - hosts: edge_hosts
@@ -32,8 +33,10 @@
     - create_ifcs
     - plumgrid_edge
   vars:
-    - pg_service_name: plumgrid-iovisor
+    - pg_service_name: plumgrid
     - pg_package_name: plumgrid-edge-docker
+    - plumgrid_ifc_gateway_dir: "/var/run/plumgrid"
+    - plumgrid_data_dir: "/var/lib/plumgrid/plumgrid-data"
 
 - hosts: gateway_hosts
   user: root
@@ -44,6 +47,7 @@
   vars:
     - pg_service_name: plumgrid-iovisor
     - pg_package_name: plumgrid-lxc
+    - plumgrid_ifc_gateway_dir: "/var/lib/libvirt/filesystems/plumgrid/var/run/plumgrid/lxc"
 
 - hosts: director_hosts
   user: root
