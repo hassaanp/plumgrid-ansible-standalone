@@ -56,3 +56,9 @@
   until: pg_lxc_check.stdout.find('start/running') != -1
   retries: 3
   delay: 5
+
+- name: Install PLUMgrid CLI
+  apt:
+    name: pg-cli
+    state: present
+  when: libnetwork_enable is defined and libnetwork_enable == True 

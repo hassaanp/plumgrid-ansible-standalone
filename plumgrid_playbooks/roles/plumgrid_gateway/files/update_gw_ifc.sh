@@ -51,7 +51,7 @@ while [ $# -gt 0 ]; do
 done
 
 if [ "$update_option" = "add" ]; then
-  if grep -Fq "$interface" /var/lib/libvirt/filesystems/plumgrid/var/run/plumgrid/lxc/ifc_list_gateway
+  if grep -Fq "$interface" /var/run/plumgrid/ifc_list_gateway
   then
     echo $interface already onboarded, do nothing......
   else
@@ -61,7 +61,7 @@ if [ "$update_option" = "add" ]; then
       if [ -z "$add_port" ]; then
         ifup=$(/opt/pg/bin/ifc_ctl gateway ifup $interface access_phys $mac)
         if [ -z "$ifup" ]; then
-          echo $interface = access_phys >> /var/lib/libvirt/filesystems/plumgrid-data/conf/pg/ifcs.conf
+          echo $interface = access_phys >> /var/lib/plumgrid/plumgrid-data/conf/pg/ifcs.conf
           echo Successfully added $interface......
           exit 0
         else
@@ -84,7 +84,7 @@ elif [ "$update_option" = "remove" ]; then
     if [ -z "$ifdown" ]; then
       del_port=$(/opt/pg/bin/ifc_ctl gateway del_port $interface)
       if [ -z "$del_port" ]; then
-        sed -i "/$interface = access_phys/d" /var/lib/libvirt/filesystems/plumgrid-data/conf/pg/ifcs.conf
+        sed -i "/$interface = access_phys/d" /var/lib/plumgrid/plumgrid-data/conf/pg/ifcs.conf
         echo Successfully removed $interface......
         exit 0
       else

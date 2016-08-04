@@ -19,5 +19,5 @@
 
 # This script passes variable value for PLUMgrid Data Directory Path.
 
-plumgrid_data_dir="/var/lib/libvirt/filesystems/plumgrid-data"
-plumgrid_ifc_gateway_dir="/var/lib/libvirt/filesystems/plumgrid/var/run/plumgrid/lxc"
+plumgrid_data_dir="/var/lib/plumgrid/plumgrid-data"
+plumgrid_ifc_gateway_dir="/var/run/plumgrid"

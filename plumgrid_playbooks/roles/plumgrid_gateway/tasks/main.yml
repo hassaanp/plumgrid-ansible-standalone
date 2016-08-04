@@ -21,7 +21,7 @@
 
 - name: Checking for ifcs file existence
   stat:
-    path: "/var/lib/libvirt/filesystems/plumgrid/var/run/plumgrid/lxc/ifc_list_gateway"
+    path: "{{ plumgrid_ifc_gateway_dir }}/ifc_list_gateway"
   register: ifcs_present
 
 - name: Run Gateway Interface Checks
@@ -71,8 +71,8 @@
 
 - name: Check PLUMgrid services
   shell: >
-     /opt/local/bin/nsenter -t $(ps ho pid --ppid $(cat /var/run/libvirt/lxc/plumgrid.pid)) -m -n -u -i -p /usr/bin/service {{ pg_service_name }} status
-  register: pg_lxc_check
-  until: pg_lxc_check.stdout.find('start/running') != -1
+    /usr/bin/service {{ pg_service_name }} status
+  register: pg_service_check
+  until: pg_service_check.stdout.find('start/running') != -1
   retries: 3
   delay: 5

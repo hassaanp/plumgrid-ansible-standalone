@@ -45,17 +45,16 @@
   command: dpkg-query -l docker-engine
   register: docker_check
   ignore_errors: yes
-  when: inventory_hostname in groups['edge_hosts']
 
 - name: Install Docker
   shell: curl -sSL https://get.docker.com/ | sh
-  when: inventory_hostname in groups['edge_hosts'] and docker_check.stderr.find('no packages found') != -1
+  when: docker_check.stderr.find('no packages found') != -1
 
 - name: Check Docker Service
   command: /usr/bin/service docker status
   register: service_check
   until: service_check.stdout.find('start/running') != -1
-  when: inventory_hostname in groups['edge_hosts']
+  when: inventory_hostname not in groups['director_hosts']
 
 - name: Install iovisor and plumgrid
   apt:
@@ -85,7 +84,7 @@
     dest: "{{ plumgrid_data_dir }}/conf/etc/{{ item }}"
     replace: "{{ inventory_hostname }}"
     regexp: "plumgrid"
-  when: inventory_hostname not in groups['edge_hosts']
+  when: inventory_hostname in groups['director_hosts']
   with_items:
     - hostname
     - hosts
