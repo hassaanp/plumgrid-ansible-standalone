@@ -48,6 +48,13 @@
     option: default_domain
     value: "{{ default_domain }}"
 
+- name: Update PLUMgrid Libnetwork Scope to Global
+  ini_file:
+    dest: /opt/pg/libnetwork/config.ini
+    section: Libnetwork
+    option: scope
+    value: "{{ scope }}"
+
 - name: Restart Libnetwork Service
   service:
     name: libnetwork

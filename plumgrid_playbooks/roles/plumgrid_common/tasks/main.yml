@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Removing pre-exiting sources.list
+- name: Removing pre-existing sources.list
   file:
     path: "/etc/apt/sources.list.d/plumgrid.list"
     state: absent

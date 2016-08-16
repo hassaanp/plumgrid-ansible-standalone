@@ -20,7 +20,7 @@
 
 # Repo Link hosting PLUMgrid packages
 plumgrid_repo: http://REPO-IP
-plumgrid_component: halfdome-500
+plumgrid_component: icebox-600
 
 # PLUMgrid configuration directory path
 plumgrid_ifc_gateway_dir: "/var/run/plumgrid"
@@ -53,6 +53,7 @@ lvm_keypath_content: /var/lib/plumgrid/id_rsa.pub
 required_pg_kernel: 3.19.0-47-generic
 libnetwork_enable: False
 default_domain: admin
+scope: global
 
 pg_ports:
   vip_port: 443
