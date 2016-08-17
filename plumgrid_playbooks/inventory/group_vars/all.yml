@@ -19,8 +19,8 @@
 # Replace all < > placeholders with appropiate values before beginning an installation
 
 # Repo Link hosting PLUMgrid packages
-plumgrid_repo: http://<LCM-IP>:81
-plumgrid_component: halfdome-500
+plumgrid_repo: http://<REPO-IP>
+plumgrid_component: halfdome-511
 
 # PLUMgrid configuration directory path
 plumgrid_data_dir: "/var/lib/libvirt/filesystems/plumgrid-data"
@@ -47,6 +47,8 @@ pg_license_path: /var/lib/plumgrid/pg_license
 lvm_keypath_content: /var/lib/plumgrid/id_rsa.pub
 required_pg_kernel: 3.19.0-47-generic
 libnetwork_enable: False
+default_domain: admin
+scope: global
 
 pg_ports:
   vip_port: 443
