@@ -40,21 +40,22 @@
     file: /tmp/GPG-KEY
     state: present
 
-# Install docker on Edge
+# Install docker
 - name: Check if Docker is installed
   command: dpkg-query -l docker-engine
   register: docker_check
   ignore_errors: yes
+  when: cns_enabled is defined and cns_enabled == True
 
 - name: Install Docker
   shell: curl -sSL https://get.docker.com/ | sh
-  when: docker_check.stderr.find('no packages found') != -1
+  when: cns_enabled is defined and cns_enabled == True and docker_check.stderr.find('no packages found') != -1
 
-- name: Check Docker Service
-  command: /usr/bin/service docker status
-  register: service_check
-  until: service_check.stdout.find('start/running') != -1
-  when: inventory_hostname not in groups['director_hosts']
+- name: Start Docker Service
+  service:
+    name: docker
+    state: started
+  when: cns_enabled is defined and cns_enabled == True
 
 - name: Install iovisor and plumgrid
   apt:
@@ -84,7 +85,7 @@
     dest: "{{ plumgrid_data_dir }}/conf/etc/{{ item }}"
     replace: "{{ inventory_hostname }}"
     regexp: "plumgrid"
-  when: inventory_hostname in groups['director_hosts']
+  when: "pg_package_name == 'plumgrid-lxc'"
   with_items:
     - hostname
     - hosts

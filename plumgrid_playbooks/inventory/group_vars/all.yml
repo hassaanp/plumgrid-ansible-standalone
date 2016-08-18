@@ -22,13 +22,18 @@
 plumgrid_repo: http://REPO-IP
 plumgrid_component: icebox-600
 
-# PLUMgrid configuration directory path
-plumgrid_ifc_gateway_dir: "/var/run/plumgrid"
-plumgrid_data_dir: "/var/lib/plumgrid/plumgrid-data"
 
-#PLUMgrid Package Name & Service Name
-pg_package_name: plumgrid-edge-docker
-pg_service_name: plumgrid
+pg_package_type: plumgrid-lxc
+
+pg_pkg_name:
+  plumgrid-lxc:
+    plumgrid_ifc_gateway_dir: "/var/lib/libvirt/filesystems/plumgrid/var/run/plumgrid/lxc"
+    plumgrid_data_dir: "/var/lib/libvirt/filesystems/plumgrid-data"
+    pg_service_name: plumgrid-iovisor
+  plumgrid-edge-docker:
+    plumgrid_ifc_gateway_dir: "/var/run/plumgrid"
+    plumgrid_data_dir: "/var/lib/plumgrid/plumgrid-data"
+    pg_service_name: plumgrid
 
 # PLUMgrid Zone configuration
 plumgrid_ip: <Director-IPs>
@@ -51,7 +56,7 @@ install_license: True
 pg_license_path: /var/lib/plumgrid/pg_license
 lvm_keypath_content: /var/lib/plumgrid/id_rsa.pub
 required_pg_kernel: 3.19.0-47-generic
-libnetwork_enable: False
+cns_enabled: False
 default_domain: admin
 scope: global
 

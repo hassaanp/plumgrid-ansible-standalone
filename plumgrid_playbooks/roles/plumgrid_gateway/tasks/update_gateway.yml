@@ -21,11 +21,21 @@
 
 - name: Check PLUMgrid services
   shell: >
+     /opt/local/bin/nsenter -t $(ps ho pid --ppid $(cat /var/run/libvirt/lxc/plumgrid.pid)) -m -n -u -i -p /usr/bin/service {{ pg_service_name }} status
+  register: pg_lxc_check
+  until: pg_lxc_check.stdout.find('start/running') != -1
+  retries: 3
+  delay: 5
+  when: cns_enabled is defined and cns_enabled == False
+
+- name: Check PLUMgrid services
+  shell: >
     /usr/bin/service {{ pg_service_name }} status
   register: pg_service_check
   until: pg_service_check.stdout.find('start/running') != -1
   retries: 3
   delay: 5
+  when: cns_enabled is defined and cns_enabled == True
 
 - name: Extract all currently defined Gateway interfaces
   shell: >

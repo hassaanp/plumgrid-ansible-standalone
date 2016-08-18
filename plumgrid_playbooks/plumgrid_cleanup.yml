@@ -44,6 +44,7 @@
         - iovisor-dkms
         - plumgrid-edge-docker
         - docker-engine
+        - plumgrid-lxc
 
 # Remove Edges
 - name: Cleanup PLUMgrid Edges
@@ -71,6 +72,7 @@
         - iovisor-dkms
         - plumgrid-edge-docker
         - docker-engine
+        - plumgrid-lxc
 
 # Remove PLUMgrid  Directors
 - name: Cleanup PLUMgrid Directors
