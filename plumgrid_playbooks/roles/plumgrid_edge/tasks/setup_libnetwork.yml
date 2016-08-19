@@ -26,7 +26,6 @@
     option: virtual_ip
     value: "{{ pg_vip }}"
 
-
 - name: Update PLUMgrid Username in libnetwork config
   ini_file:
     dest: /opt/pg/libnetwork/config.ini
