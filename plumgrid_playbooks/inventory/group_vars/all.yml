@@ -23,9 +23,9 @@ plumgrid_repo: http://REPO-IP
 plumgrid_component: icebox-600
 
 
-pg_package_type: plumgrid-lxc
+pg_package_type: "{{ (cns_enabled | bool) | ternary('plumgrid-edge-docker', 'plumgrid-lxc') }}"
 
-pg_pkg_name:
+pg_package:
   plumgrid-lxc:
     plumgrid_ifc_gateway_dir: "/var/lib/libvirt/filesystems/plumgrid/var/run/plumgrid/lxc"
     plumgrid_data_dir: "/var/lib/libvirt/filesystems/plumgrid-data"

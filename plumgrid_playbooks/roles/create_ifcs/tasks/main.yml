@@ -17,7 +17,7 @@
 - name: Update PLUMgrid Data Directory
   delegate_to: localhost
   replace: 
-    dest: /opt/plumgrid-ansible-standalone/plumgrid_playbooks/roles/create_ifcs/files/helpers.sh
+    dest: /opt/plumgrid-ansible-standalone/plumgrid_playbooks/roles/create_ifcs/files/update_pg_ifc.sh
     regexp: "{{ item.regexp}}"
     replace: "{{ item.replace}}"
   with_items:

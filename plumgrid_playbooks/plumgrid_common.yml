@@ -36,9 +36,9 @@
     - plumgrid_edge
   vars:
     pg_package_name: "{{ pg_package_type }}"
-    plumgrid_data_dir: "{{ pg_pkg_name[pg_package_type].plumgrid_data_dir }}"
-    plumgrid_ifc_gateway_dir: '{{ pg_pkg_name[pg_package_type].plumgrid_ifc_gateway_dir }}'
-    pg_service_name: "{{ pg_pkg_name[pg_package_type].pg_service_name }}"
+    plumgrid_data_dir: "{{ pg_package[pg_package_type].plumgrid_data_dir }}"
+    plumgrid_ifc_gateway_dir: '{{ pg_package[pg_package_type].plumgrid_ifc_gateway_dir }}'
+    pg_service_name: "{{ pg_package[pg_package_type].pg_service_name }}"
 
 - hosts: gateway_hosts
   user: root
@@ -48,9 +48,9 @@
     - plumgrid_gateway
   vars:
     pg_package_name: "{{ pg_package_type }}"
-    plumgrid_data_dir: "{{ pg_pkg_name[pg_package_type].plumgrid_data_dir }}"
-    plumgrid_ifc_gateway_dir: "{{ pg_pkg_name[pg_package_type].plumgrid_ifc_gateway_dir }}"
-    pg_service_name: "{{ pg_pkg_name[pg_package_type].pg_service_name }}"
+    plumgrid_data_dir: "{{ pg_package[pg_package_type].plumgrid_data_dir }}"
+    plumgrid_ifc_gateway_dir: "{{ pg_package[pg_package_type].plumgrid_ifc_gateway_dir }}"
+    pg_service_name: "{{ pg_package[pg_package_type].pg_service_name }}"
 
 - hosts: director_hosts
   user: root

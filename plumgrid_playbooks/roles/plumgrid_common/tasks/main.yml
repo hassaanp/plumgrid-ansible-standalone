@@ -85,7 +85,7 @@
     dest: "{{ plumgrid_data_dir }}/conf/etc/{{ item }}"
     replace: "{{ inventory_hostname }}"
     regexp: "plumgrid"
-  when: "pg_package_name == 'plumgrid-lxc'"
+  when: pg_package_name == 'plumgrid-lxc'
   with_items:
     - hostname
     - hosts

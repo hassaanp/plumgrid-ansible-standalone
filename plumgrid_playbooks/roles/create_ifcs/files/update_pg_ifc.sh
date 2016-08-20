@@ -22,7 +22,9 @@
 #
 # Usage: sh update_pg_ifc.sh -i eth0
 
-. helpers.sh
+plumgrid_data_dir="/var/lib/plumgrid/plumgrid-data"
+plumgrid_ifc_gateway_dir="/var/run/plumgrid"
+
 set -e
 
 usage() {
