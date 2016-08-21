@@ -14,6 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+- name: Update PLUMgrid Data Directory
+  delegate_to: localhost
+  replace:
+    dest: /opt/plumgrid-ansible-standalone/plumgrid_playbooks/roles/plumgrid_gateway/files/update_gw_ifc.sh
+    regexp: "{{ item.regexp}}"
+    replace: "{{ item.replace}}"
+  with_items:
+    - { regexp: '^plumgrid_data_dir=.*', replace: 'plumgrid_data_dir="{{plumgrid_data_dir}}"' }
+    - { regexp: '^plumgrid_ifc_gateway_dir=.*', replace: 'plumgrid_ifc_gateway_dir="{{plumgrid_ifc_gateway_dir}}"' }
+
 - name: Insert gateway ifc update script
   copy:
     src: update_gw_ifc.sh
@@ -21,7 +31,7 @@
 
 - name: Checking for ifcs file existence
   stat:
-    path: "/var/lib/libvirt/filesystems/plumgrid/var/run/plumgrid/lxc/ifc_list_gateway"
+    path: "{{ plumgrid_ifc_gateway_dir }}/ifc_list_gateway"
   register: ifcs_present
 
 - name: Run Gateway Interface Checks
@@ -76,3 +86,13 @@
   until: pg_lxc_check.stdout.find('start/running') != -1
   retries: 3
   delay: 5
+  when: cns_enabled is defined and cns_enabled == False
+
+- name: Check PLUMgrid services
+  shell: >
+    /usr/bin/service {{ pg_service_name }} status
+  register: pg_service_check
+  until: pg_service_check.stdout.find('start/running') != -1
+  retries: 3
+  delay: 5
+  when: cns_enabled is defined and cns_enabled == True

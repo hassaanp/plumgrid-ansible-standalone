@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Removing pre-exiting sources.list
+- name: Removing pre-existing sources.list
   file:
     path: "/etc/apt/sources.list.d/plumgrid.list"
     state: absent
@@ -40,7 +40,24 @@
     file: /tmp/GPG-KEY
     state: present
 
-- name: Install iovisor and plumgrid-lxc
+# Install docker
+- name: Check if Docker is installed
+  command: dpkg-query -l docker-engine
+  register: docker_check
+  ignore_errors: yes
+  when: cns_enabled is defined and cns_enabled == True
+
+- name: Install Docker
+  shell: curl -sSL https://get.docker.com/ | sh
+  when: cns_enabled is defined and cns_enabled == True and docker_check.stderr.find('no packages found') != -1
+
+- name: Start Docker Service
+  service:
+    name: docker
+    state: started
+  when: cns_enabled is defined and cns_enabled == True
+
+- name: Install iovisor and plumgrid
   apt:
     name: "{{ item }}" 
     update_cache: yes
@@ -48,7 +65,7 @@
     force: yes
   with_items:
     - iovisor-dkms
-    - plumgrid-lxc
+    - "{{ pg_package_name }}"
 
 - name: Setup PLUMgrid Conf
   template:
@@ -68,6 +85,7 @@
     dest: "{{ plumgrid_data_dir }}/conf/etc/{{ item }}"
     replace: "{{ inventory_hostname }}"
     regexp: "plumgrid"
+  when: pg_package_name == 'plumgrid-lxc'
   with_items:
     - hostname
     - hosts

@@ -19,11 +19,21 @@
 # Replace all < > placeholders with appropiate values before beginning an installation
 
 # Repo Link hosting PLUMgrid packages
-plumgrid_repo: http://<REPO-IP>
-plumgrid_component: halfdome-511
+plumgrid_repo: http://REPO-IP
+plumgrid_component: icebox-600
 
-# PLUMgrid configuration directory path
-plumgrid_data_dir: "/var/lib/libvirt/filesystems/plumgrid-data"
+
+pg_package_type: "{{ (cns_enabled | bool) | ternary('plumgrid-edge-docker', 'plumgrid-lxc') }}"
+
+pg_package:
+  plumgrid-lxc:
+    plumgrid_ifc_gateway_dir: "/var/lib/libvirt/filesystems/plumgrid/var/run/plumgrid/lxc"
+    plumgrid_data_dir: "/var/lib/libvirt/filesystems/plumgrid-data"
+    pg_service_name: plumgrid-iovisor
+  plumgrid-edge-docker:
+    plumgrid_ifc_gateway_dir: "/var/run/plumgrid"
+    plumgrid_data_dir: "/var/lib/plumgrid/plumgrid-data"
+    pg_service_name: plumgrid
 
 # PLUMgrid Zone configuration
 plumgrid_ip: <Director-IPs>
@@ -31,6 +41,9 @@ pg_vip: <VIP on Management Network>
 fabric_mode: host
 pg_username: plumgrid
 pg_password: plumgrid
+
+# IP Address Of OPSVM
+middleware_ip: <OPSVM-IP>
 
 # Default Fabric Interface
 fabric_interface: <fabric interface for all nodes, eg eth1>
@@ -40,13 +53,22 @@ pg_management: <management interface for all nodes, eg. eth0>
 
 hostname: "{{ inventory_hostname }}"
 
+# Overriding Fabric interface for these nodes
+#fabric_ifc_override:
+#  gateway1: eth1
+#  edgeN: eth3
+
+# Overriding Management interface for these nodes
+#mgmt_override:
+#  gateway1: eth2
+
 # Installation parameters
 gpg_keypath: /var/lib/plumgrid/GPG-KEY
 install_license: True
 pg_license_path: /var/lib/plumgrid/pg_license
 lvm_keypath_content: /var/lib/plumgrid/id_rsa.pub
 required_pg_kernel: 3.19.0-47-generic
-libnetwork_enable: False
+cns_enabled: False
 default_domain: admin
 scope: global
 

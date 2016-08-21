@@ -14,6 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+- name: Update PLUMgrid Data Directory
+  delegate_to: localhost
+  replace: 
+    dest: /opt/plumgrid-ansible-standalone/plumgrid_playbooks/roles/create_ifcs/files/update_pg_ifc.sh
+    regexp: "{{ item.regexp}}"
+    replace: "{{ item.replace}}"
+  with_items:
+    - { regexp: '^plumgrid_data_dir=.*', replace: 'plumgrid_data_dir="{{plumgrid_data_dir}}"' }
+    - { regexp: '^plumgrid_ifc_gateway_dir=.*', replace: 'plumgrid_ifc_gateway_dir="{{plumgrid_ifc_gateway_dir}}"' }
+
 - name: Checking for ifcs file existence
   stat:
     path: "{{ plumgrid_data_dir }}/conf/pg/ifcs.conf"
@@ -25,11 +35,11 @@
     dest: "/usr/local/bin/update_pg_ifc.sh"
 
 - name: Update Fabric interface for non defaults
-  command: "sh /usr/local/bin/update_pg_ifc.sh -i {{ fabric_ifc_override[inventory_hostname] }}"
+  command: "bash /usr/local/bin/update_pg_ifc.sh -i {{ fabric_ifc_override[inventory_hostname] }}"
   when: fabric_ifc_override is defined and inventory_hostname in fabric_ifc_override and ifcs_present.stat.exists
 
 - name: Update Fabric interface if default
-  command: "sh /usr/local/bin/update_pg_ifc.sh -i {{ fabric_interface }}"
+  command: "bash /usr/local/bin/update_pg_ifc.sh -i {{ fabric_interface }}"
   when: ifcs_present.stat.exists and (fabric_ifc_override is undefined or inventory_hostname not in fabric_ifc_override)
 
 # Ensuring idempotency for ifcs file changes

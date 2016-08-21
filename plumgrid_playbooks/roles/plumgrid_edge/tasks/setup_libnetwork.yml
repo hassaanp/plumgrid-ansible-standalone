@@ -1,6 +1,6 @@
 ---
 #
-# Copyright (c) 2015, PLUMgrid Inc, http://plumgrid.com
+# Copyright (c) 2016, PLUMgrid Inc, http://plumgrid.com
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,16 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-# Install docker
-- name: Check if docker is installed
-  command: dpkg-query -l docker-engine
-  register: docker_check
-  ignore_errors: yes
-
-- name: Install Docker
-  shell: curl -sSL https://get.docker.com/ | sh
-  when: docker_check.stderr.find('no packages found') != -1
 
 - name: Install Libnetwork
   apt:
@@ -63,3 +53,8 @@
     section: Libnetwork
     option: scope
     value: "{{ scope }}"
+
+- name: Restart Libnetwork Service
+  service:
+    name: libnetwork
+    state: restarted

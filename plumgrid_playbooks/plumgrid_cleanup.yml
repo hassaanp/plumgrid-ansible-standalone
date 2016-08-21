@@ -19,9 +19,9 @@
 #          PLUMgrid environment
 #
 
-# Remove PLUMgrid Edges & Directors
-- name: Cleanup PLUMgrid
-  hosts: director_hosts:edge_hosts:gateway_hosts
+# Remove Gateways
+- name: Cleanup PLUMgrid Gateways
+  hosts: gateway_hosts
   user: root
   tasks:
     - name: Remove sources.list
@@ -31,13 +31,72 @@
 
     - name: Unload iovisor
       command: /sbin/rmmod iovisor
+      ignore_errors: yes
 
-    - name: Remove iovisor-dkms and plumgrid-lxc
+    - name: Remove Packages
+      apt:
+        name: "{{ item }}"
+        state: absent
+        purge: yes
+        force: yes
+      ignore_errors: yes
+      with_items:
+        - iovisor-dkms
+        - plumgrid-edge-docker
+        - docker-engine
+        - plumgrid-lxc
+
+# Remove Edges
+- name: Cleanup PLUMgrid Edges
+  hosts: edge_hosts
+  user: root
+  tasks:
+    - name: Remove sources.list
+      file:
+        path: "/etc/apt/sources.list.d/plumgrid.list"
+        state: absent
+
+    - name: Unload iovisor
+      command: /sbin/rmmod iovisor
+      ignore_errors: yes
+
+    - name: Remove Packages
+      ignore_errors: yes
       apt:
         name: "{{ item }}"
         state: absent
         purge: yes
         force: yes
       with_items:
+        - libnetwork
+        - iovisor-dkms
+        - plumgrid-edge-docker
+        - docker-engine
+        - plumgrid-lxc
+
+# Remove PLUMgrid  Directors
+- name: Cleanup PLUMgrid Directors
+  hosts: director_hosts
+  user: root
+  tasks:
+    - name: Remove sources.list
+      file:
+        path: "/etc/apt/sources.list.d/plumgrid.list"
+        state: absent
+
+    - name: Unload iovisor
+      command: /sbin/rmmod iovisor
+      ignore_errors: yes
+
+    - name: Remove Packages
+      apt:
+        name: "{{ item }}"
+        state: absent
+        purge: yes
+        force: yes
+      ignore_errors: yes
+      with_items:
+        - pg-cli
+        - docker-engine
         - iovisor-dkms
         - plumgrid-lxc

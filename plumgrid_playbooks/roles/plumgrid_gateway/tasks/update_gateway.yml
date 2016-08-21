@@ -26,24 +26,34 @@
   until: pg_lxc_check.stdout.find('start/running') != -1
   retries: 3
   delay: 5
+  when: cns_enabled is defined and cns_enabled == False
+
+- name: Check PLUMgrid services
+  shell: >
+    /usr/bin/service {{ pg_service_name }} status
+  register: pg_service_check
+  until: pg_service_check.stdout.find('start/running') != -1
+  retries: 3
+  delay: 5
+  when: cns_enabled is defined and cns_enabled == True
 
 - name: Extract all currently defined Gateway interfaces
   shell: >
-   grep "access_phys" /var/lib/libvirt/filesystems/plumgrid/var/run/plumgrid/lxc/ifc_list_gateway | cut -d ' ' -f1
+   grep "access_phys" "{{ plumgrid_ifc_gateway_dir }}/ifc_list_gateway" | cut -d ' ' -f1
   register: current_gw_ifcs
 
 - debug:
     msg: "{{ current_gw_ifcs.stdout_lines }}"
 
 - name: Check & update removed gateway interfaces
-  command: "sh /usr/local/bin/update_gw_ifc.sh -i {{ item[0] }} -u remove"
+  command: "bash /usr/local/bin/update_gw_ifc.sh -i {{ item[0] }} -u remove"
   with_nested:
       - current_gw_ifcs.stdout_lines
       - gateway_hosts
   when: inventory_hostname == item[1].hostname and (item[0] not in item[1].gateway_devs)
 
 - name: Check & Onboard additional Gateway interfaces
-  command: "sh /usr/local/bin/update_gw_ifc.sh -i {{ item.1 }} -u add"
+  command: "bash /usr/local/bin/update_gw_ifc.sh -i {{ item.1 }} -u add"
   with_subelements:
       - gateway_hosts
       - gateway_devs

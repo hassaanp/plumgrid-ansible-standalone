@@ -22,6 +22,9 @@
 #
 # Usage: sh update_pg_ifc.sh -i eth0
 
+plumgrid_data_dir="/var/lib/plumgrid/plumgrid-data"
+plumgrid_ifc_gateway_dir="/var/run/plumgrid"
+
 set -e
 
 usage() {
@@ -47,9 +50,9 @@ done
 
 if [ -e /sys/class/net/$interface ]; then
 
-  if [ -f /var/lib/libvirt/filesystems/plumgrid/var/run/plumgrid/lxc/ifc_list_gateway ]; then
+  if [ -f ${plumgrid_ifc_gateway_dir}/ifc_list_gateway ]; then
 
-    current_fabric=$(grep "fabric_core" /var/lib/libvirt/filesystems/plumgrid/var/run/plumgrid/lxc/ifc_list_gateway | cut -d ' ' -f1)
+    current_fabric=$(grep "fabric_core" ${plumgrid_ifc_gateway_dir}/ifc_list_gateway | cut -d ' ' -f1)
     echo Current Fabric interface is $current_fabric
 
     if [ "$current_fabric" = "$interface" ]; then
@@ -76,7 +79,7 @@ if [ -e /sys/class/net/$interface ]; then
           exit 1
         fi
       fi
-      sed -i "/ fabric_core host/d" /var/lib/libvirt/filesystems/plumgrid-data/conf/pg/ifcs.conf
+      sed -i "/ fabric_core host/d" ${plumgrid_data_dir}/conf/pg/ifcs.conf
 
       # Adding new fabric interface
       mac=$(cat /sys/class/net/$interface/address)
@@ -86,7 +89,7 @@ if [ -e /sys/class/net/$interface ]; then
         ifup=$(/opt/pg/bin/ifc_ctl gateway ifup $interface fabric_core $mac)
 
         if [ -z "$ifup" ]; then
-          echo $interface = fabric_core host >> /var/lib/libvirt/filesystems/plumgrid-data/conf/pg/ifcs.conf
+          echo $interface = fabric_core host >> ${plumgrid_data_dir}/conf/pg/ifcs.conf
           echo Successfully added $interface......
           exit 0
         else
@@ -106,7 +109,7 @@ if [ -e /sys/class/net/$interface ]; then
         ifup=$(/opt/pg/bin/ifc_ctl gateway ifup $interface fabric_core $mac)
 
         if [ -z "$ifup" ]; then
-          echo $interface = fabric_core host >> /var/lib/libvirt/filesystems/plumgrid-data/conf/pg/ifcs.conf
+          echo $interface = fabric_core host >> ${plumgrid_data_dir}/conf/pg/ifcs.conf
           echo Successfully added $interface......
           exit 0
         else

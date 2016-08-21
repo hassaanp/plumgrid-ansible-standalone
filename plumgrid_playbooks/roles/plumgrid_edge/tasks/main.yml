@@ -18,12 +18,14 @@
   template:
     src: "qemu.conf.j2"
     dest: "/etc/libvirt/qemu.conf"
+  when: cns_enabled is defined and cns_enabled == False
 
 - name: Restart libvirt-bin
   service:
     name: libvirt-bin
     state: restarted
     pattern: libvirt-bin
+  when: cns_enabled is defined and cns_enabled == False
 
 - name: Restart PLUMgrid service
   service:
@@ -37,7 +39,17 @@
   until: pg_lxc_check.stdout.find('start/running') != -1
   retries: 3
   delay: 5
+  when: cns_enabled is defined and cns_enabled == False
+
+- name: Check PLUMgrid services
+  shell: >
+    /usr/bin/service {{ pg_service_name }} status
+  register: pg_service_check
+  until: pg_service_check.stdout.find('start/running') != -1
+  retries: 3
+  delay: 5
+  when: cns_enabled is defined and cns_enabled == True
 
 - name: Setup Libnetwork config
   include: setup_libnetwork.yml
-  when: libnetwork_enable is defined and libnetwork_enable == True
+  when: cns_enabled is defined and cns_enabled == True
