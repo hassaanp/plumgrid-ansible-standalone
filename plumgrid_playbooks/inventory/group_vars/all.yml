@@ -54,13 +54,13 @@ pg_management: <management interface for all nodes, eg. eth0>
 hostname: "{{ inventory_hostname }}"
 
 # Overriding Fabric interface for these nodes
-fabric_ifc_override:
-  gateway1: eth1
-  edgeN: eth3
+#fabric_ifc_override:
+#  gateway1: eth1
+#  edgeN: eth3
 
 # Overriding Management interface for these nodes
-mgmt_override:
-  gateway1: eth2
+#mgmt_override:
+#  gateway1: eth2
 
 # Installation parameters
 gpg_keypath: /var/lib/plumgrid/GPG-KEY
