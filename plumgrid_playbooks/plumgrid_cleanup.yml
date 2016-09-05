@@ -96,7 +96,7 @@
         force: yes
       ignore_errors: yes
       with_items:
-        - pg-cli
+        - pgctl
         - docker-engine
         - iovisor-dkms
         - plumgrid-lxc

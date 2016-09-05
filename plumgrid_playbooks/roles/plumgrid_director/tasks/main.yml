@@ -69,6 +69,6 @@
 
 - name: Install PLUMgrid CLI
   apt:
-    name: pg-cli
+    name: pgctl
     state: present
   when: cns_enabled is defined and cns_enabled == True 
