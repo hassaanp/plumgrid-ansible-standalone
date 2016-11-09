@@ -22,10 +22,18 @@
     - plumgrid_director
   any_errors_fatal: yes
   vars:
-    pg_package_name: plumgrid-lxc
+    pg_package_name: "{{ pg_package_type }}"
     pg_service_name: plumgrid
-    plumgrid_data_dir: "/var/lib/libvirt/filesystems/plumgrid-data"
-    plumgrid_ifc_gateway_dir: "/var/lib/libvirt/filesystems/plumgrid/var/run/plumgrid/lxc"
+    plumgrid_data_dir: "{{ pg_package[pg_package_type].plumgrid_data_dir }}"
+    plumgrid_ifc_gateway_dir: '{{ pg_package[pg_package_type].plumgrid_ifc_gateway_dir }}'
+    pg_core_package_name: "{{ pg_core_package }}"
+    pg_util_package_name: "{{ pg_util_package }}"
+    pg_sal_package_name: "{{ pg_sal_package }}"
+    pg_logger_package_name: "{{ pg_logger_package }}"
+    pg_util_service_name: "{{ pg_util_service_name }}"
+    pg_logger_service_name: "{{ pg_logger_service_name }}"
+    pg_core_service_name: "{{ pg_core_service_name }}"
+    pg_sal_service_name: "{{ pg_sal_service_name }}"
 
 
 - hosts: edge_hosts

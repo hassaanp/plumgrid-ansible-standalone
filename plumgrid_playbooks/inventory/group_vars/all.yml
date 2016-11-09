@@ -24,6 +24,10 @@ plumgrid_component: icebox-600
 
 
 pg_package_type: "{{ (cns_enabled | bool) | ternary('plumgrid-edge-docker', 'plumgrid-lxc') }}"
+pg_util_package: "{{ (cns_enabled | bool) | ternary('plumgrid-util-docker', '') }}"
+pg_core_package: "{{ (cns_enabled | bool) | ternary('plumgrid-core-docker', '') }}"
+pg_sal_package: "{{ (cns_enabled | bool) | ternary('plumgrid-sal-docker', '') }}"
+pg_logger_package: "{{ (cns_enabled | bool) | ternary('plumgrid-logger-docker', '') }}"
 
 pg_package:
   plumgrid-lxc:
@@ -34,6 +38,14 @@ pg_package:
     plumgrid_ifc_gateway_dir: "/var/run/plumgrid"
     plumgrid_data_dir: "/var/lib/plumgrid/plumgrid-data"
     pg_service_name: plumgrid
+  plumgrid-util-docker:
+    pg_util_service_name: plumgrid-util-docker
+  plumgrid-core-docker:
+    pg_core_service_name: plumgrid-core-docker
+  plumgrid-sal-docker:
+    pg_sal_service_name: plumgrid-sal-docker
+  plumgrid-logger-docker:
+    pg_logger_service_name: plumgrid-logger-docker
 
 # PLUMgrid Zone configuration
 plumgrid_ip: <Director-IPs>
