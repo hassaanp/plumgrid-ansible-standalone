@@ -78,6 +78,13 @@
   service:
     name: plumgrid
     state: restarted
+  when: cns_enabled is undefined or cns_enabled == False
+
+- name: Restart PLUMgrid Docker services
+  service:
+    name: plumgrid-edge
+    state: restarted
+  when: cns_enabled is defined and cns_enabled == True
 
 - name: Check PLUMgrid services
   shell: >

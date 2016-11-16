@@ -37,15 +37,15 @@ pg_package:
   plumgrid-edge-docker:
     plumgrid_ifc_gateway_dir: "/var/run/plumgrid"
     plumgrid_data_dir: "/var/lib/plumgrid/plumgrid-data"
-    pg_service_name: plumgrid
+    pg_service_name: plumgrid-edge
   plumgrid-util-docker:
-    pg_util_service_name: plumgrid-util-docker
+    pg_util_service_name: plumgrid-util
   plumgrid-core-docker:
-    pg_core_service_name: plumgrid-core-docker
+    pg_core_service_name: plumgrid-core
   plumgrid-sal-docker:
-    pg_sal_service_name: plumgrid-sal-docker
+    pg_sal_service_name: plumgrid-sal
   plumgrid-logger-docker:
-    pg_logger_service_name: plumgrid-logger-docker
+    pg_logger_service_name: plumgrid-logger
 
 # PLUMgrid Zone configuration
 plumgrid_ip: <Director-IPs>

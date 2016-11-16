@@ -47,7 +47,7 @@
         msg: |
           "Unsupported kernel Version found
           [ {{ ansible_kernel }} > {{ required_pg_kernel }} ]
-          Resolve this issue before continuing.""
+          Resolve this issue before continuing."
       when: required_pg_kernel is defined and (ansible_kernel | version_compare(required_pg_kernel, '>'))
 
 - name: Check Pre-Install Requirements
@@ -55,7 +55,7 @@
   user: root
   tasks:
     - name: Check if plumgrid is installed
-      command: dpkg-query -l plumgrid-lxc
+      command: dpkg-query -l {{ pg_package_type }}
       register: deb_check
       ignore_errors: yes
 
